@@ -1,3 +1,6 @@
 build/*
 *.o
 .vscode/*
+application/main
+engine/tools/rc/rc
+*.a
