@@ -21,9 +21,9 @@ FORCE:
 	@echo CXX $<
 	@$(CXX) -c $< -o $@ $(CFLAGS)
 
-%.rc.o:%.rc
-	@echo RC $<
-	@cd $(dir $<);$(RC) $<
+# %.rc.o:%.rc
+# 	@echo RC $<
+# 	@cd $(dir $<);$(RC) $<
 
 %/: FORCE
 	@make -C $@ build
