@@ -4,7 +4,9 @@ default: build
 include $(MAKEFILE_COMMON)
 
 .PHONY: build
-build: $(OBJ)
+build: libglad.a
+
+libglad.a: $(OBJ)
 	@echo Link libglad.a
 	@$(AR) r libglad.a $(OBJ)
 
