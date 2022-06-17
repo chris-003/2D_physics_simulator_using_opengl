@@ -5,7 +5,7 @@
     ".incbin" " \"" path "\"\n" \
     ".byte 0\n" \
     ".text\n"); \
-    extern char *_##name; \
+    extern const char _##name[]; \
     m_##name = _##name
 
 Resource::Resource() {
