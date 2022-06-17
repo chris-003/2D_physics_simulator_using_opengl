@@ -2,11 +2,15 @@
 #include "engine/engine.h"
 #include <box2d/box2d.h>
 #include <glm/mat4x4.hpp>
+#include "Widget.h"
+#include <vector>
 
 class Window : public engine::Window, public b2Draw {
 public:
     Window();
     ~Window();
+    void addWidget(Widget *widget);
+    void removeWidget(Widget *widget);
 public:
     void init();
     void setMatrix(const glm::mat4x4 *m);
@@ -28,11 +32,13 @@ public:
     void ScrollCallback(double xoffset, double yoffset);
     void KeyCallback(int key, int scancode, int action, int mods);
 protected:
+    std::vector<Widget *> widgets;
     engine::ShaderProgram *program_basic, *program_blur7_pingpong_h, *program_blur7_pingpong_v, *program_blurN_pingpong_h, *program_blurN_pingpong_v, *program_copy_texture;
-    engine::VertexBuffer *vbo1, *vbo_blurScreen;
-    engine::VertexArray *vao1, *vao_blurScreen;
+    engine::VertexBuffer *vbo1, *vbo_blurScreen, *vbo_button_1, *vbo_button_2;
+    engine::VertexArray *vao1, *vao_blurScreen, *vao_button_1;
     glm::mat4x4 matrix;
     bool LBDown, RBDown;
     glm::vec2 prevMousePos;
     engine::Framebuffer *defaultFbo, *fbo1, *fbo2;
+    double x, y;
 };

@@ -20,11 +20,11 @@ namespace engine {
         virtual void ScrollCallback(double xoffset, double yoffset);
         virtual void KeyCallback(int key, int scancode, int action, int mods);
     private:
-        static void FramebufferSizeCallbackHelper(GLFWwindow* window, int width, int height);
-        static void MouseButtonCallbackHelper(GLFWwindow* window, int button, int action, int mods);
-        static void CursorPosCallbackHelper(GLFWwindow* window, double xpos, double ypos);
-        static void ScrollCallbackHelper(GLFWwindow* window, double xoffset, double yoffset);
-        static void KeyCallbackHelper(GLFWwindow* window, int key, int scancode, int action, int mods);
+        static void FramebufferSizeCallbackHelper(GLFWwindow *window, int width, int height);
+        static void MouseButtonCallbackHelper(GLFWwindow *window, int button, int action, int mods);
+        static void CursorPosCallbackHelper(GLFWwindow *window, double xpos, double ypos);
+        static void ScrollCallbackHelper(GLFWwindow *window, double xoffset, double yoffset);
+        static void KeyCallbackHelper(GLFWwindow *window, int key, int scancode, int action, int mods);
     public:
         virtual void render();
         // virtual void init();
