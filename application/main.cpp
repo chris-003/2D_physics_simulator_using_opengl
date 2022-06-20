@@ -1,12 +1,12 @@
 #include "Global.h"
 #include "engine/engine.h"
-#include "Window.h"
+#include "MainWindow.h"
 
 int main() {
     auto &app = engine::Application::getInstance();
 
     Global::getInstance().stage = Global::Stage::Running;
-    Window window;
+    MainWindow window;
     window.updateFramebuffer(800, 600);
 
     app.run();
