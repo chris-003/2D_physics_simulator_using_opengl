@@ -6,9 +6,9 @@ namespace engine {
         Framebuffer(int width, int height);
         ~Framebuffer();
     public:
-        void bind();
-        void unbind();
-        unsigned int texture();
+        virtual void bind();
+        virtual void unbind();
+        virtual unsigned int texture();
     protected:
         unsigned int m_fbo, m_texture, m_rbo;
     };

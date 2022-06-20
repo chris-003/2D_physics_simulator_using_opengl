@@ -1,6 +1,7 @@
 #pragma once
 #include "Application.h"
 #include "Window.h"
+#include "Widget.h"
 #include "Framebuffer.h"
 #include "Shader.h"
 #include "ShaderProgram.h"

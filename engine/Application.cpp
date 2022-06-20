@@ -28,14 +28,14 @@ namespace engine {
     void Application::run() {
         while (!windowQueue.empty()) {
             for (auto iter = windowQueue.begin(); iter != windowQueue.end(); ++iter) {
-                if (glfwWindowShouldClose((*iter)->window)) {
+                if (glfwWindowShouldClose((*iter)->window())) {
                     (*iter)->terminate();
                     --iter;
                 }
                 else {
-                    glfwMakeContextCurrent((*iter)->window);
+                    glfwMakeContextCurrent((*iter)->window());
                     (*iter)->render();
-                    glfwSwapBuffers((*iter)->window);
+                    glfwSwapBuffers((*iter)->window());
                 }
             }
             glfwWaitEvents();
