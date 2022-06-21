@@ -8,7 +8,7 @@
 #include "MainWidget.h"
 #include "Button_1.h"
 
-class MainWindow : public engine::Window, public b2Draw {
+class MainWindow : public engine::Window {
     friend class MainWidget;
     friend class Buton_1;
 public:
