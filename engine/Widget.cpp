@@ -9,17 +9,23 @@ namespace engine {
         this->_visible = visible;
     }
 
+    Widget::~Widget() {
+        parent()->removeWidget(this);
+    }
+
     void Widget::render() {}
 
-    void Window::FramebufferSizeCallback(int width, int height) {}
+    void Widget::FramebufferSizeCallback(int width, int height) {
+        glViewport(0, 0, width, height);
+    }
 
-    void Window::MouseButtonCallback(int button, int action, int mods) {}
+    void Widget::MouseButtonCallback(int button, int action, int mods) {}
 
-    void Window::CursorPosCallback(double xpos, double ypos) {}
+    void Widget::CursorPosCallback(double xpos, double ypos) {}
 
-    void Window::ScrollCallback(double xoffset, double yoffset) {}
+    void Widget::ScrollCallback(double xoffset, double yoffset) {}
 
-    void Window::KeyCallback(int key, int scancode, int action, int mods) {}
+    void Widget::KeyCallback(int key, int scancode, int action, int mods) {}
 
 
     Window *Widget::parent() {
@@ -31,8 +37,10 @@ namespace engine {
             return;
         }
         // else
-        if (parent->isWidget(this)) {
-            return;
+        if (parent != nullptr) {
+            if (parent->isWidget(this)) {
+                return;
+            }
         }
         // else
         Window *p = this->_parent;
@@ -54,7 +62,7 @@ namespace engine {
         _visible = visible;
     }
 
-    const glm::vec4 &Widget::geometry() {
+    glm::vec4 Widget::geometry() {
         return geo;
     }
 
@@ -67,7 +75,7 @@ namespace engine {
         geo = geometry;
     }
 
-    const glm::vec2 &Widget::pos() {
+    glm::vec2 Widget::pos() {
         return glm::vec2(geo.x, geo.y);
     }
 
@@ -102,7 +110,7 @@ namespace engine {
         geo.y = y;
     }
 
-    const glm::vec2 &Widget::size() {
+    glm::vec2 Widget::size() {
         return glm::vec2(geo.z - geo.x, geo.w - geo.y);
     }
 
@@ -142,7 +150,7 @@ namespace engine {
         geo.w = geo.y + height;
     }
 
-    const glm::vec2 &Widget::rightBottomPos() {
+    glm::vec2 Widget::rightBottomPos() {
         return glm::vec2(geo.z, geo.w);
     }
 

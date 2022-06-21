@@ -59,7 +59,7 @@ namespace engine {
     }
 
     bool Window::isWidget(Widget *widget) {
-        return std::find(widgets.begin(), widgets.end(), widget) == widgets.end();
+        return std::find(widgets.begin(), widgets.end(), widget) != widgets.end();
     }
 
     Widget *Window::focus() {
