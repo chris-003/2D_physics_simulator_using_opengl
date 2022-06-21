@@ -3,14 +3,17 @@
 #include "World.h"
 #include "CCircleBuffer.h"
 #include "CNormalDistBuffer.h"
+#include "MainWindow.h"
 
-MainWidget::MainWidget(MainWindow *parent) : engine::Widget(parent) {
+MainWidget::MainWidget(MainWindow *parent) : engine::Widget(parent), matrix(0) {
     ::World::getInstance()->SetDebugDraw(this);
     b2Draw::SetFlags(e_shapeBit | e_jointBit | e_aabbBit | e_pairBit | e_centerOfMassBit);
     matrix[0][0] = 2.0f / 800;
     matrix[1][1] = 2.0f / 600;
     matrix[2][2] = 1;
     matrix[3][3] = 1;
+    LBDown = false;
+	RBDown = false;
 
     {
         vbo1.reset(new engine::VertexBuffer);
@@ -104,6 +107,22 @@ void MainWidget::updateBackgroundFbo() {
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 		vao_blurScreen->unbind();
 }
+
+glm::vec2 MainWidget::getMousePos() {
+    double x, y;
+    glfwGetCursorPos(parent()->window(), &x, &y);
+    return glm::vec2(x, y);
+}
+
+// glm::vec2 MainWidget::getMousePos() {
+// 	double xpos, ypos;
+// 	glfwGetCursorPos(parent()->window(), &xpos, &ypos);
+// 	int width, height;
+// 	glfwGetWindowSize(parent()->window(), &width, &height);
+// 	xpos = xpos * 2 / width - 1;
+// 	ypos = 1 - ypos * 2 / height;
+// 	return glm::vec2(xpos, ypos);
+// }
 
 void MainWidget::render() {
     MainWindow *parent = (MainWindow *)this->parent();
@@ -239,6 +258,139 @@ void MainWidget::render() {
     }
     }
     // glfwSwapBuffers(window);
+}
+
+void MainWidget::FramebufferSizeCallback(int width, int height) {
+    matrix[0][0] = 2.0f / width;
+	matrix[1][1] = 2.0f / height;
+	updateFramebuffer(width, height);
+	if (Global::getInstance().stage == Global::Stage::Paused) {
+		updateBackgroundFbo();
+	}
+    engine::Widget::FramebufferSizeCallback(width, height);
+}
+
+void MainWidget::MouseButtonCallback(int button, int action, int mods) {
+	switch (action) {
+	case GLFW_PRESS: {
+		switch (button) {
+		case GLFW_MOUSE_BUTTON_LEFT: {
+			switch (Global::getInstance().stage) {
+			default:
+			case Global::Stage::Running: {
+				prevMousePos = getMousePos();
+				LBDown = true;
+				break;
+			}
+			case Global::Stage::Paused: {
+				break;
+			}
+			}
+			break;
+		}
+		case GLFW_MOUSE_BUTTON_RIGHT: {
+			RBDown = true;
+			break;
+		}
+		default:
+		break;
+		}
+
+		break;
+	}
+	case GLFW_RELEASE: {
+		switch (button) {
+		case GLFW_MOUSE_BUTTON_LEFT: {
+			LBDown = false;
+			break;
+		}
+		case GLFW_MOUSE_BUTTON_RIGHT: {
+			RBDown = false;
+			break;
+		}
+		default:
+		break;
+		}
+
+		break;
+	}
+	default:
+	break;
+	}
+    engine::Widget::MouseButtonCallback(button, action, mods);
+}
+
+void MainWidget::CursorPosCallback(double xpos, double ypos) {
+	switch (Global::getInstance().stage) {
+	default:
+	case Global::Stage::Running: {
+		if (LBDown) {
+			glm::vec2 pos = getMousePos();
+			glm::vec2 delta = pos - prevMousePos;
+			glm::mat4x4 t(1);
+			t[3][0] = matrix[0][0] * delta.x;
+			t[3][1] = -matrix[1][1] * delta.y;
+			matrix = t * matrix;
+			prevMousePos = pos;
+			glfwPostEmptyEvent();
+		}
+		break;
+	}
+	case Global::Stage::Paused: {
+		break;
+	}
+	}
+    engine::Widget::CursorPosCallback(xpos, ypos);
+}
+
+void MainWidget::ScrollCallback(double xoffset, double yoffset) {
+	switch (Global::getInstance().stage) {
+	defualt:
+	case Global::Stage::Running: {
+		auto pos = getMousePos();
+		glm::mat4x4 t(1), rt(1), m(1);
+		t[3][0] = pos.x * matrix[0][0] - 1;
+		t[3][1] = 1 - pos.y * matrix[1][1];
+		rt[3][0] = -t[3][0];
+		rt[3][1] = -t[3][1];
+		double offset = yoffset != 0 ? yoffset : xoffset;
+		m[3][3] = offset > 0 ? 1.1f : 1.0f / 1.1f;
+		matrix = t * m * rt * matrix;
+		// glfwPostEmptyEvent();
+		break;
+	}
+	case Global::Stage::Paused: {
+		break;
+	}
+	}
+	engine::Widget::ScrollCallback(xoffset, yoffset);
+}
+
+void MainWidget::KeyCallback(int key, int scancode, int action, int mods) {
+    switch (key) {
+	case GLFW_KEY_ESCAPE: {
+		switch (action) {
+		case GLFW_PRESS: {
+			if (Global::getInstance().stage == Global::Stage::Running) {
+				Global::getInstance().stage = Global::Stage::Paused;
+				LBDown = false;
+				updateBackgroundFbo();
+			}
+			else {
+				Global::getInstance().stage = Global::Stage::Running;
+			}
+			// glfwPostEmptyEvent();
+			break;
+		}
+		default:
+		break;
+		}
+		break;
+	}
+	default:
+	break;
+	}
+	engine::Widget::KeyCallback(key, scancode, action, mods);
 }
 
 void MainWidget::DrawPolygon(const b2Vec2 *vertices, int32 vertexCount, const b2Color &color) {
