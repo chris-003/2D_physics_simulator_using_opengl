@@ -2,7 +2,8 @@
 #include "engine/engine.h"
 #include <glm/mat4x4.hpp>
 #include <memory>
-#include "MainWindow.h"
+
+class MainWindow;
 
 class Button_1 : public engine::Widget {
 public:
