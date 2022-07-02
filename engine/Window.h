@@ -22,6 +22,7 @@ namespace engine {
         bool isWidget(Widget *widget);
         Widget *focus();
         void setFocus(Widget *widget);
+        glm::vec2 size();
     public:
         virtual void FramebufferSizeCallback(int width, int height);
         virtual void MouseButtonCallback(int button, int action, int mods);
@@ -44,5 +45,6 @@ namespace engine {
         GLFWwindow *_window;
         std::vector<Widget *> widgets;
         Widget *_focus;
+        glm::vec2 _size;
     };
 }

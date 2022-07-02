@@ -13,11 +13,9 @@ namespace engine {
         parent()->removeWidget(this);
     }
 
-    void Widget::render() {}
+    void Widget::render(Framebuffer &fbo) {}
 
-    void Widget::FramebufferSizeCallback(int width, int height) {
-        glViewport(0, 0, width, height);
-    }
+    void Widget::FramebufferSizeCallback(int width, int height) {}
 
     void Widget::MouseButtonCallback(int button, int action, int mods) {}
 

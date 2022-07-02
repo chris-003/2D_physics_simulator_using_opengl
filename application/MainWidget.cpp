@@ -124,7 +124,7 @@ glm::vec2 MainWidget::getMousePos() {
 // 	return glm::vec2(xpos, ypos);
 // }
 
-void MainWidget::render() {
+void MainWidget::render(engine::Framebuffer &fbo_1) {
     MainWindow *parent = (MainWindow *)this->parent();
     // glfwMakeContextCurrent(window);
     // defaultFbo->bind();
@@ -211,7 +211,8 @@ void MainWidget::render() {
         // glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         // vao_blurScreen->unbind();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        fbo_1.bind();
         // glClear(GL_COLOR_BUFFER_BIT);
         parent->program_copy_texture->bind();
         glActiveTexture(GL_TEXTURE0);
@@ -375,10 +376,12 @@ void MainWidget::KeyCallback(int key, int scancode, int action, int mods) {
 				Global::getInstance().stage = Global::Stage::Paused;
 				LBDown = false;
 				updateBackgroundFbo();
+                // ((MainWindow *)parent())->button_1->setVisible(true);
 			}
 			else {
 				Global::getInstance().stage = Global::Stage::Running;
-			}
+                // ((MainWindow *)parent())->button_1->setVisible(false);
+            }
 			// glfwPostEmptyEvent();
 			break;
 		}

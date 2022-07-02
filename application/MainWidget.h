@@ -28,7 +28,7 @@ public:
     void DrawTransform(const b2Transform &xf);
     void DrawPoint(const b2Vec2 &p, float size, const b2Color &color);
 public:
-    virtual void render();
+    virtual void render(engine::Framebuffer &fbo_1);
 private:
     glm::vec2 getMousePos();
 protected:

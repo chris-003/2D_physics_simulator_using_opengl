@@ -23,7 +23,9 @@ MainWindow::MainWindow() :  engine::Window(glm::vec2(800, 600), "Simulator") {
 	init();
 	mainWidget.reset(new MainWidget(this));
 	mainWidget->setGeometry(glm::vec4(0, 0, 800, 600));
-	// button_1.reset(new Button_1(this, program_basic));
+	// button_1.reset(new Button_1(this));
+	// button_1->setGeometry(glm::vec4(400, 0, 800, 300));
+	// button_1->setVisible(false);
 }
 
 void MainWindow::init() {

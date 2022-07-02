@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/vec4.hpp>
 #include <glm/vec2.hpp>
+#include "Framebuffer.h"
 
 namespace engine {
     class Window;
@@ -10,7 +11,7 @@ namespace engine {
         Widget(Window *parent = nullptr, const glm::vec4 &geometry = glm::vec4(0, 0, 0, 0), bool visible = true);
         ~Widget();
     public:
-        virtual void render();
+        virtual void render(Framebuffer &fbo);
     public:
         virtual void FramebufferSizeCallback(int width, int height);
         virtual void MouseButtonCallback(int button, int action, int mods);

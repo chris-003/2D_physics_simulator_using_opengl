@@ -2,7 +2,7 @@
 #include "engine/engine.h"
 #include "MainWindow.h"
 
-Button_1::Button_1(MainWindow *parent, std::unique_ptr<engine::ShaderProgram> &_program_basic) : Widget(parent), program_basic(_program_basic) {
+Button_1::Button_1(MainWindow *parent) : Widget(parent) {
     setGeometry(glm::vec4(400, 0, 800, 300));
 
 	vbo_button_1.reset(new engine::VertexBuffer);
@@ -29,6 +29,7 @@ Button_1::~Button_1() {
 }
 
 void Button_1::render() {
+    auto &program_basic = ((MainWindow *)parent())->program_basic;
     double x, y;
     glfwGetCursorPos(parent()->window(), &x, &y);
     // glfwGetCursorPos(parent()->window(), &parent()->x, &parent()->y);

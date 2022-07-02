@@ -38,7 +38,7 @@ namespace engine {
                     glfwSwapBuffers((*iter)->window());
                 }
             }
-            glfwWaitEvents();
+            glfwPollEvents();
         }
     }
 

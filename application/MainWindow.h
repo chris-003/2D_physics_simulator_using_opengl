@@ -10,7 +10,7 @@
 
 class MainWindow : public engine::Window {
     friend class MainWidget;
-    friend class Buton_1;
+    friend class Button_1;
 public:
     MainWindow();
     ~MainWindow();
