@@ -3,9 +3,9 @@
 
 class World : public engine::World {
 private:
-	World();
+    World();
 
 public:
-	~World();
-	static World &getInstance();
+    ~World();
+    static World &getInstance();
 };

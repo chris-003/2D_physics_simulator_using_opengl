@@ -7,10 +7,12 @@ template<int N>
 class CNormalDistBuffer {
 private:
     CNormalDistBuffer();
+
 public:
     ~CNormalDistBuffer();
     static CNormalDistBuffer<N> &getInstance();
-    const float *buffer() const;
+    const float                 *buffer() const;
+
 protected:
     std::array<float, N> buf;
 };
@@ -18,8 +20,8 @@ protected:
 template<int N>
 CNormalDistBuffer<N>::CNormalDistBuffer() {
     float step = 3.0f / (N - 1);
-    float x = 0;
-    float sum = 0;
+    float x    = 0;
+    float sum  = 0;
     for (int i = 0; i < N; ++i) {
         buf[i] = 1.0f * expf(-(x * x / 2.0f)) / sqrtf(2 * M_PI);
         sum += 2 * buf[i];

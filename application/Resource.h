@@ -1,17 +1,19 @@
 #pragma once
 #include <string>
 
-#define DECLARE_RESOURCE(type, name) \
-    public:\
-        const type &name() const {\
-            return m_##name;\
-        }\
-    protected:\
-        type m_##name
+#define DECLARE_RESOURCE(type, name)                                           \
+public:                                                                        \
+    const type &name() const {                                                 \
+        return m_##name;                                                       \
+    }                                                                          \
+                                                                               \
+protected:                                                                     \
+    type m_##name
 
 class Resource {
 private:
     Resource();
+
 public:
     ~Resource();
     static Resource &getInstance();
