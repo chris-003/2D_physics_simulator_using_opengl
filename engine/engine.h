@@ -1,5 +1,6 @@
 #pragma once
 #include "Application.h"
+#include "BindHelper.h"
 #include "Framebuffer.h"
 #include "Shader.h"
 #include "ShaderProgram.h"

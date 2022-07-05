@@ -42,4 +42,9 @@ void Framebuffer::unbind() {
 unsigned int Framebuffer::texture() {
     return m_texture;
 }
+
+void Framebuffer::bindTexture(int index) {
+    glActiveTexture(GL_TEXTURE0 + index);
+    glBindTexture(GL_TEXTURE_2D, texture());
+}
 } // namespace engine

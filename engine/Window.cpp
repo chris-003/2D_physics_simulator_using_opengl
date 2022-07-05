@@ -254,7 +254,7 @@ void main() {
     } dummy;
     for (auto iter = widgets.begin(); iter != widgets.end(); ++iter) {
         if ((*iter)->visible()) {
-            Framebuffer fbo((*iter)->width(), (*iter)->height());
+            Framebuffer fbo(size().x, size().y);
             glm::vec4   points[4];
             // calculate the layout from fbo1(screen) to fbo(widget)
             {

@@ -19,34 +19,25 @@ MainWidget::MainWidget(MainWindow *parent) : engine::Widget(parent), matrix(0) {
     {
         vbo1.reset(new engine::VertexBuffer);
         vao1.reset(new engine::VertexArray);
-        vao1->bind();
-        vbo1->bind();
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float),
-                              (void *)0);
-        glEnableVertexAttribArray(0);
-        vao1->unbind();
-        vbo1->unbind();
+        auto vao = engine::make_BindHelper(vao1);
+        vao->enable(0, 2, 2 * sizeof(float), 0);
     }
     {
-        vbo_blurScreen.reset(new engine::VertexBuffer);
-        vao_blurScreen.reset(new engine::VertexArray);
-        vao_blurScreen->bind();
-        vbo_blurScreen->bind();
-        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                              (void *)0);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                              (void *)(2 * sizeof(float)));
-        glEnableVertexAttribArray(1);
-        vao_blurScreen->unbind();
         {
+            vbo_blurScreen.reset(new engine::VertexBuffer);
+            vao_blurScreen.reset(new engine::VertexArray);
+            auto vao = engine::make_BindHelper(vao_blurScreen);
+            vao->enable(0, 2, 4 * sizeof(float), 0);
+            vao->enable(1, 2, 4 * sizeof(float), 2 * sizeof(float));
+        }
+        {
+            auto vbo = engine::make_BindHelper(vbo_blurScreen);
             struct Point {
                 float x, y, tx, ty;
             } points[4] = {
                 {1, 1, 1, 1}, {-1, 1, 0, 1}, {-1, -1, 0, 0}, {1, -1, 1, 0}};
             vbo_blurScreen->write(sizeof(points), points, GL_STATIC_DRAW);
         }
-        vbo_blurScreen->unbind();
     }
 }
 
@@ -72,7 +63,8 @@ void MainWidget::updateFramebuffer(int width, int height) {
 }
 
 void MainWidget::updateBackgroundFbo() {
-    MainWindow *parent = (MainWindow *)this->parent();
+    MainWindow              *parent = (MainWindow *)this->parent();
+    static const glm::mat4x4 identity(1);
 
     fbo1->bind();
     glClear(GL_COLOR_BUFFER_BIT);
@@ -80,40 +72,37 @@ void MainWidget::updateBackgroundFbo() {
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     ::World::getInstance()->DebugDraw();
 
-    fbo2->bind();
-    glClear(GL_COLOR_BUFFER_BIT);
-    parent->program_blurN_pingpong_h->bind();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, fbo1->texture());
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    vbo_blurScreen->bind();
-    vao_blurScreen->bind();
-    static const glm::mat4x4 identity(1);
-    glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
-    glUniform1i(3, 24);
-    glUniform1fv(4, 24 * sizeof(float),
-                 CNormalDistBuffer<24>::getInstance().buffer());
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    vao_blurScreen->unbind();
-
-    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // defaultFbo->bind();
-    // fbo1->bind();
-    bgfbo->bind();
-    glClear(GL_COLOR_BUFFER_BIT);
-    parent->program_blurN_pingpong_v->bind();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, fbo2->texture());
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    vbo_blurScreen->bind();
-    vao_blurScreen->bind();
-    // static const glm::mat4x4 identity(1);
-    glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
-    glUniform1i(3, 24);
-    glUniform1fv(4, 24 * sizeof(float),
-                 CNormalDistBuffer<24>::getInstance().buffer());
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    vao_blurScreen->unbind();
+    {
+        fbo2->bind();
+        glClear(GL_COLOR_BUFFER_BIT);
+        parent->program_blurN_pingpong_h->bind();
+        fbo1->bindTexture(0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        vbo_blurScreen->bind();
+        auto vao = engine::make_BindHelper(vao_blurScreen);
+        glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
+        glUniform1i(3, 24);
+        glUniform1fv(4, 24 * sizeof(float),
+                     CNormalDistBuffer<24>::getInstance().buffer());
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
+    {
+        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // defaultFbo->bind();
+        // fbo1->bind();
+        bgfbo->bind();
+        glClear(GL_COLOR_BUFFER_BIT);
+        parent->program_blurN_pingpong_v->bind();
+        fbo2->bindTexture(0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        vbo_blurScreen->bind();
+        auto vao = engine::make_BindHelper(vao_blurScreen);
+        glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
+        glUniform1i(3, 24);
+        glUniform1fv(4, 24 * sizeof(float),
+                     CNormalDistBuffer<24>::getInstance().buffer());
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
 }
 
 glm::vec2 MainWidget::getMousePos() {
@@ -220,33 +209,32 @@ void MainWidget::render(engine::Framebuffer &fbo_1) {
         // CNormalDistBuffer<24>::getInstance().buffer());
         // glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
         // vao_blurScreen->unbind();
-
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        fbo_1.bind();
-        // glClear(GL_COLOR_BUFFER_BIT);
-        parent->program_copy_texture->bind();
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, bgfbo->texture());
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        vbo_blurScreen->bind();
-        vao_blurScreen->bind();
-        // glUniform4f(1, 0, 0, 0, 0.6);
-        glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        vao_blurScreen->unbind();
-
-        // glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        // glClear(GL_COLOR_BUFFER_BIT);
-        parent->program_basic->bind();
-        // glActiveTexture(GL_TEXTURE0);
-        // glBindTexture(GL_TEXTURE_2D, fbo1->texture());
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        vbo_blurScreen->bind();
-        vao_blurScreen->bind();
-        glUniform4f(1, 0, 0, 0, 0.6);
-        glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
-        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-        vao_blurScreen->unbind();
+        {
+            // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            fbo_1.bind();
+            // glClear(GL_COLOR_BUFFER_BIT);
+            parent->program_copy_texture->bind();
+            bgfbo->bindTexture(0);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            auto vbo = engine::make_BindHelper(vbo_blurScreen);
+            auto vao = engine::make_BindHelper(vao_blurScreen);
+            // glUniform4f(1, 0, 0, 0, 0.6);
+            glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        }
+        {
+            // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            // glClear(GL_COLOR_BUFFER_BIT);
+            parent->program_basic->bind();
+            // glActiveTexture(GL_TEXTURE0);
+            // glBindTexture(GL_TEXTURE_2D, fbo1->texture());
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            auto vbo = engine::make_BindHelper(vbo_blurScreen);
+            auto vao = engine::make_BindHelper(vao_blurScreen);
+            glUniform4f(1, 0, 0, 0, 0.6);
+            glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+        }
 
         // glfwGetCursorPos(window, &x, &y);
         // glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -412,13 +400,12 @@ void MainWidget::DrawPolygon(const b2Vec2 *vertices, int32 vertexCount,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    vbo1->bind();
-    vbo1->write(vertexCount * sizeof(b2Vec2), (void *)vertices);
+    auto vbo = engine::make_BindHelper(vbo1);
+    vbo->write(vertexCount * sizeof(b2Vec2), (void *)vertices);
     glUniform4f(1, color.r, color.g, color.b, color.a);
     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&matrix);
-    vao1->bind();
+    auto vao = engine::make_BindHelper(vao1);
     glDrawArrays(GL_TRIANGLE_FAN, 0, vertexCount);
-    vao1->unbind();
 }
 
 void MainWidget::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount,
@@ -427,13 +414,12 @@ void MainWidget::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    vbo1->bind();
-    vbo1->write(vertexCount * sizeof(b2Vec2), (void *)vertices);
+    auto vbo = engine::make_BindHelper(vbo1);
+    vbo->write(vertexCount * sizeof(b2Vec2), (void *)vertices);
     glUniform4f(1, color.r, color.g, color.b, color.a);
     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&matrix);
-    vao1->bind();
+    auto vao = engine::make_BindHelper(vao1);
     glDrawArrays(GL_TRIANGLE_FAN, 0, vertexCount);
-    vao1->unbind();
 }
 
 void MainWidget::DrawCircle(const b2Vec2 &center, float radius,
@@ -442,20 +428,19 @@ void MainWidget::DrawCircle(const b2Vec2 &center, float radius,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    vbo1->bind();
-    const int             N = 256;
+    auto                  vbo = engine::make_BindHelper(vbo1);
+    const int             N   = 256;
     std::array<b2Vec2, N> buf;
     auto                 &circleBuffer = CCircleBuffer<N>::getInstance();
     for (int i = 0; i < N; ++i) {
         buf[i].x = center.x + radius * circleBuffer[i].x;
         buf[i].y = center.y + radius * circleBuffer[i].y;
     }
-    vbo1->write(N * sizeof(b2Vec2), buf.data());
+    vbo->write(N * sizeof(b2Vec2), buf.data());
     glUniform4f(1, color.r, color.g, color.b, color.a);
     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&matrix);
-    vao1->bind();
+    auto vao = engine::make_BindHelper(vao1);
     glDrawArrays(GL_TRIANGLE_FAN, 0, N);
-    vao1->unbind();
 }
 
 void MainWidget::DrawSolidCircle(const b2Vec2 &center, float radius,
@@ -464,20 +449,19 @@ void MainWidget::DrawSolidCircle(const b2Vec2 &center, float radius,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    vbo1->bind();
-    const int             N = 256;
+    auto                  vbo = engine::make_BindHelper(vbo1);
+    const int             N   = 256;
     std::array<b2Vec2, N> buf;
     auto                 &circleBuffer = CCircleBuffer<N>::getInstance();
     for (int i = 0; i < N; ++i) {
         buf[i].x = center.x + radius * circleBuffer[i].x;
         buf[i].y = center.y + radius * circleBuffer[i].y;
     }
-    vbo1->write(N * sizeof(b2Vec2), buf.data());
+    vbo->write(N * sizeof(b2Vec2), buf.data());
     glUniform4f(1, color.r, color.g, color.b, color.a);
     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&matrix);
-    vao1->bind();
+    auto vao = engine::make_BindHelper(vao1);
     glDrawArrays(GL_TRIANGLE_FAN, 0, N);
-    vao1->unbind();
 }
 
 void MainWidget::DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2,
@@ -486,16 +470,15 @@ void MainWidget::DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    vbo1->bind();
+    auto   vbo = engine::make_BindHelper(vbo1);
     b2Vec2 pos[2];
     pos[0] = p1;
     pos[1] = p2;
-    vbo1->write(2 * sizeof(b2Vec2), pos);
+    vbo->write(2 * sizeof(b2Vec2), pos);
     glUniform4f(1, color.r, color.g, color.b, color.a);
     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&matrix);
-    vao1->bind();
+    auto vao = engine::make_BindHelper(vao1);
     glDrawArrays(GL_LINE, 0, 2);
-    vao1->unbind();
 }
 
 void MainWidget::DrawTransform(const b2Transform &xf) {

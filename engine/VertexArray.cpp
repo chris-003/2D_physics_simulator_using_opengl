@@ -18,4 +18,10 @@ void VertexArray::bind() {
 void VertexArray::unbind() {
     glBindVertexArray(0);
 }
+
+void VertexArray::enable(int index, int size, int stride, int offset,
+                         GLenum type, GLboolean normalize) {
+    glEnableVertexAttribArray(index);
+    glVertexAttribPointer(index, size, type, normalize, stride, (void *)offset);
+}
 } // namespace engine
