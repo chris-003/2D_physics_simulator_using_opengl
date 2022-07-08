@@ -19,6 +19,7 @@ MainWidget::MainWidget(MainWindow *parent) : engine::Widget(parent), matrix(0) {
     {
         vbo1.reset(new engine::VertexBuffer);
         vao1.reset(new engine::VertexArray);
+        auto vbo = engine::make_BindHelper(vbo1);
         auto vao = engine::make_BindHelper(vao1);
         vao->enable(0, 2, 2 * sizeof(float), 0);
     }
@@ -26,6 +27,7 @@ MainWidget::MainWidget(MainWindow *parent) : engine::Widget(parent), matrix(0) {
         {
             vbo_blurScreen.reset(new engine::VertexBuffer);
             vao_blurScreen.reset(new engine::VertexArray);
+            auto vbo = engine::make_BindHelper(vbo_blurScreen);
             auto vao = engine::make_BindHelper(vao_blurScreen);
             vao->enable(0, 2, 4 * sizeof(float), 0);
             vao->enable(1, 2, 4 * sizeof(float), 2 * sizeof(float));
