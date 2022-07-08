@@ -136,7 +136,6 @@ void MainWidget::render(engine::Framebuffer &fbo_1) {
         glClear(GL_COLOR_BUFFER_BIT);
         ::World::getInstance()->DebugDraw();
         b2Vec2 vertexes[4] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
-        this->DrawSolidCircle(b2Vec2(0, 0), 10, b2Vec2(0, 0), b2Color(1, 0, 0));
         // program_copy_texture->bind();
         // glActiveTexture(GL_TEXTURE0);
         // glBindTexture(GL_TEXTURE_2D, m_texture);
