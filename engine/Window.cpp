@@ -205,7 +205,8 @@ void Window::KeyCallbackHelper(GLFWwindow *window, int key, int scancode,
 }
 
 void Window::render() {
-    Framebuffer fbo1(size().x, size().y);
+    // Framebuffer fbo1(size().x, size().y);
+    Framebuffer fbo1(800, 600);
     static class Dummy {
     public:
         Dummy() {
@@ -220,7 +221,6 @@ void main()
 {
     gl_Position = vec4(VerexPosition, 0, 1);
     texCoord = TexCoord;
-    // texCoord = vec2((gl_Position[0] + 1) / 2, (gl_Position[1] + 1) / 2);
 })",
                 R"(#version 440 core
 in vec2 texCoord;
@@ -235,16 +235,10 @@ void main() {
             program->bind();
             vbo.reset(new VertexBuffer);
             vao.reset(new VertexArray);
-            vao->bind();
-            vbo->bind();
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                                  (void *)0);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                                  (void *)(2 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-            vao->unbind();
-            vbo->unbind();
+            auto _vao = make_BindHelper(vao);
+            auto _vbo = make_BindHelper(vbo);
+            _vao->enable(0, 2, 4 * sizeof(float), 0);
+            _vao->enable(1, 2, 4 * sizeof(float), 2 * sizeof(float));
         }
 
     public:
@@ -254,7 +248,8 @@ void main() {
     } dummy;
     for (auto iter = widgets.begin(); iter != widgets.end(); ++iter) {
         if ((*iter)->visible()) {
-            Framebuffer fbo(size().x, size().y);
+            // Framebuffer fbo(size().x, size().y);
+            Framebuffer fbo(800, 600);
             glm::vec4   points[4];
             // calculate the layout from fbo1(screen) to fbo(widget)
             {
@@ -268,18 +263,20 @@ void main() {
                 points[1] = {1, 1, geo.z, geo.y};
                 points[2] = {1, -1, geo.z, geo.w};
                 points[3] = {-1, -1, geo.x, geo.w};
-                dummy.vbo->write(sizeof(points), points, GL_STATIC_DRAW);
+                auto vbo  = make_BindHelper(dummy.vbo);
+                vbo->write(sizeof(points), points, GL_STATIC_DRAW);
             }
             // copy the contents from fbo1(screen) to fbo(widget) (as
             // background)
             {
                 fbo.bind();
                 dummy.program->bind();
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, fbo1.texture());
+                // glActiveTexture(GL_TEXTURE0);
+                // glBindTexture(GL_TEXTURE_2D, fbo1.texture());
+                fbo1.bindTexture(0);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                dummy.vao->bind();
-                dummy.vbo->bind();
+                auto vao = make_BindHelper(dummy.vao);
+                auto vbo = make_BindHelper(dummy.vbo);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
             }
             // actual render process
@@ -296,35 +293,57 @@ void main() {
                 geo.y = 1 - geo.y;
                 geo.z -= 1;
                 geo.w     = 1 - geo.w;
-                points[0] = {0, 1, geo.x, geo.y};
-                points[1] = {1, 1, geo.z, geo.y};
-                points[2] = {1, 0, geo.z, geo.w};
-                points[3] = {0, 0, geo.x, geo.w};
-                dummy.vbo->write(sizeof(points), points, GL_STATIC_DRAW);
+                points[0] = {geo.x, geo.y, 0, 1};
+                points[1] = {geo.z, geo.y, 1, 1};
+                points[2] = {geo.z, geo.w, 1, 0};
+                points[3] = {geo.x, geo.w, 0, 0};
+                auto vbo  = make_BindHelper(dummy.vbo);
+                vbo->write(sizeof(points), points, GL_STATIC_DRAW);
             }
             {
                 fbo1.bind();
                 dummy.program->bind();
-                glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, fbo.texture());
+                // glActiveTexture(GL_TEXTURE0);
+                // glBindTexture(GL_TEXTURE_2D, fbo.texture());
+                fbo.bindTexture(0);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-                dummy.vao->bind();
-                dummy.vbo->bind();
+                auto vao = make_BindHelper(dummy.vao);
+                auto vbo = make_BindHelper(dummy.vbo);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
             }
+            // /////////////////////////////////////////////////////
+            // {
+            //     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            //     dummy.program->bind();
+            //     // glActiveTexture(GL_TEXTURE0);
+            //     // glBindTexture(GL_TEXTURE_2D, fbo.texture());
+            //     fbo.bindTexture(0);
+            //     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+            //     auto vao = make_BindHelper(dummy.vao);
+            //     auto vbo = make_BindHelper(dummy.vbo);
+            //     glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+            //     glfwSwapBuffers(window());
+            //     glfwSwapBuffers(window());
+            // }
         }
     }
-    glm::vec4 points[4] = {
-        {-1, 1, 0, 1}, {1, 1, 1, 1}, {1, -1, 1, 0}, {-1, -1, 0, 0}};
-    dummy.vbo->write(sizeof(points), points, GL_STATIC_DRAW);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    dummy.program->bind();
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, fbo1.texture());
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    dummy.vao->bind();
-    dummy.vbo->bind();
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    {
+        glm::vec4 points[4] = {
+            {-1, 1, 0, 1}, {1, 1, 1, 1}, {1, -1, 1, 0}, {-1, -1, 0, 0}};
+        auto vbo = make_BindHelper(dummy.vbo);
+        vbo->write(sizeof(points), points, GL_STATIC_DRAW);
+    }
+    {
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        dummy.program->bind();
+        // glActiveTexture(GL_TEXTURE0);
+        // glBindTexture(GL_TEXTURE_2D, fbo1.texture());
+        fbo1.bindTexture(0);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        auto vao = make_BindHelper(dummy.vao);
+        auto vbo = make_BindHelper(dummy.vbo);
+        glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    }
 }
 
 // void Window::init() {}

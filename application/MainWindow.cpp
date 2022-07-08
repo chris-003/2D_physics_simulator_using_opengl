@@ -45,25 +45,21 @@ void MainWindow::init() {
     program_copy_texture.reset(new ShaderProgram(resource.copy_texutre_vert(),
                                                  resource.copy_texture_frag()));
 
-    vbo_button_1.reset(new VertexBuffer);
-    vao_button_1.reset(new VertexArray);
-    vao_button_1->bind();
-    vbo_button_1->bind();
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                          (void *)0);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float),
-                          (void *)(2 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-    vao_button_1->unbind();
     {
-        struct Point {
-            float x, y, tx, ty;
-        } points[4] = {
-            {1, 1, 1, 1}, {0, 1, 0.5, 1}, {0, 0, 0.5, 0.5}, {1, 0, 1, 0.5}};
-        vbo_button_1->write(sizeof(points), points, GL_STATIC_DRAW);
+        vbo_button_1.reset(new VertexBuffer);
+        vao_button_1.reset(new VertexArray);
+        auto vao = engine::make_BindHelper(vao_button_1);
+        auto vbo = engine::make_BindHelper(vbo_button_1);
+        vao->enable(0, 2, 4 * sizeof(float), 0);
+        vao->enable(1, 2, 4 * sizeof(float), 2 * sizeof(float));
+        {
+            struct Point {
+                float x, y, tx, ty;
+            } points[4] = {
+                {1, 1, 1, 1}, {0, 1, 0.5, 1}, {0, 0, 0.5, 0.5}, {1, 0, 1, 0.5}};
+            vbo->write(sizeof(points), points, GL_STATIC_DRAW);
+        }
     }
-    vbo_button_1->unbind();
     // {
     // 	unsigned int &texture = m_texture;
     // 	glGenTextures(1, &texture);

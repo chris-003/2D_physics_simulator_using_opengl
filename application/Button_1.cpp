@@ -32,22 +32,22 @@ Button_1::~Button_1() {
 }
 
 void Button_1::render() {
-    auto  &program_basic = ((MainWindow *)parent())->program_basic;
-    double x, y;
-    glfwGetCursorPos(parent()->window(), &x, &y);
-    // glfwGetCursorPos(parent()->window(), &parent()->x, &parent()->y);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    program_basic->bind();
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    vao_button_1->bind();
-    vbo_button_1->bind();
-    if (400 <= x && x <= 800 && 0 <= y && y <= 300) {
-        glUniform4f(1, 0.8, 0.8, 0.8, 0.2);
-    }
-    else {
-        glUniform4f(1, 0, 0, 0, 0.6);
-    }
-    glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
-    glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-    vao_button_1->unbind();
+    // auto  &program_basic = ((MainWindow *)parent())->program_basic;
+    // double x, y;
+    // glfwGetCursorPos(parent()->window(), &x, &y);
+    // // glfwGetCursorPos(parent()->window(), &parent()->x, &parent()->y);
+    // glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    // program_basic->bind();
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    // vao_button_1->bind();
+    // vbo_button_1->bind();
+    // if (400 <= x && x <= 800 && 0 <= y && y <= 300) {
+    //     glUniform4f(1, 0.8, 0.8, 0.8, 0.2);
+    // }
+    // else {
+    //     glUniform4f(1, 0, 0, 0, 0.6);
+    // }
+    // glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
+    // glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+    // vao_button_1->unbind();
 }

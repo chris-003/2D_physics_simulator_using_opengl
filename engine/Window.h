@@ -51,7 +51,7 @@ private:
                                   int action, int mods);
 
 public:
-    void render();
+    virtual void render();
     // virtual void init();
     void terminate();
 

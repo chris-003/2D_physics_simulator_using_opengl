@@ -36,7 +36,7 @@ MainWidget::MainWidget(MainWindow *parent) : engine::Widget(parent), matrix(0) {
                 float x, y, tx, ty;
             } points[4] = {
                 {1, 1, 1, 1}, {-1, 1, 0, 1}, {-1, -1, 0, 0}, {1, -1, 1, 0}};
-            vbo_blurScreen->write(sizeof(points), points, GL_STATIC_DRAW);
+            vbo->write(sizeof(points), points, GL_STATIC_DRAW);
         }
     }
 }
@@ -78,7 +78,7 @@ void MainWidget::updateBackgroundFbo() {
         parent->program_blurN_pingpong_h->bind();
         fbo1->bindTexture(0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        vbo_blurScreen->bind();
+        auto vbo = engine::make_BindHelper(vbo_blurScreen);
         auto vao = engine::make_BindHelper(vao_blurScreen);
         glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
         glUniform1i(3, 24);
@@ -95,7 +95,7 @@ void MainWidget::updateBackgroundFbo() {
         parent->program_blurN_pingpong_v->bind();
         fbo2->bindTexture(0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        vbo_blurScreen->bind();
+        auto vbo = engine::make_BindHelper(vbo_blurScreen);
         auto vao = engine::make_BindHelper(vao_blurScreen);
         glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
         glUniform1i(3, 24);
@@ -122,6 +122,7 @@ glm::vec2 MainWidget::getMousePos() {
 // }
 
 void MainWidget::render(engine::Framebuffer &fbo_1) {
+    fbo_1.bind();
     MainWindow *parent = (MainWindow *)this->parent();
     // glfwMakeContextCurrent(window);
     // defaultFbo->bind();
@@ -132,6 +133,8 @@ void MainWidget::render(engine::Framebuffer &fbo_1) {
     case Global::Stage::Running: {
         glClear(GL_COLOR_BUFFER_BIT);
         ::World::getInstance()->DebugDraw();
+        b2Vec2 vertexes[4] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
+        this->DrawSolidCircle(b2Vec2(0, 0), 10, b2Vec2(0, 0), b2Color(1, 0, 0));
         // program_copy_texture->bind();
         // glActiveTexture(GL_TEXTURE0);
         // glBindTexture(GL_TEXTURE_2D, m_texture);
