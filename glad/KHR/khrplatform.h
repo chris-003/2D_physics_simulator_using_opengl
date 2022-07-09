@@ -1,4 +1,3 @@
-// clang-format off
 #ifndef __khrplatform_h_
 #define __khrplatform_h_
 
