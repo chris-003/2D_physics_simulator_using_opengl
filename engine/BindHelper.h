@@ -7,7 +7,8 @@ class BindHelper {
 public:
     BindHelper(pointer_t &p);
     ~BindHelper();
-    pointer_t &operator->();
+    pointer_t                                             &operator->();
+    typename std::pointer_traits<pointer_t>::element_type &operator*();
 
 protected:
     pointer_t &ptr;

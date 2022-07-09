@@ -77,6 +77,9 @@ void Window::setFocus(Widget *widget) {
         _focus = nullptr;
         return;
     }
+    if (!widget->focusable()) {
+        return;
+    }
     // else
     auto iter = std::find(widgets.begin(), widgets.end(), widget);
     if (iter != widgets.end()) {
@@ -105,7 +108,8 @@ void Window::MouseButtonCallback(int button, int action, int mods) {
             };
             if (in(iter->geometry())) {
                 iter->MouseButtonCallback(button, action, mods);
-                _focus = iter;
+                // _focus = iter;
+                try_changeFocus(iter);
             }
         }
     }
@@ -237,8 +241,12 @@ void main() {
             vao.reset(new VertexArray);
             auto _vao = make_BindHelper(vao);
             auto _vbo = make_BindHelper(vbo);
-            _vao->enable(0, 2, 4 * sizeof(float), 0);
-            _vao->enable(1, 2, 4 * sizeof(float), 2 * sizeof(float));
+            _vao->enable(0, 2, 0);
+            _vao->bindingPoint(0, 0);
+            _vao->enable(1, 2, 2 * sizeof(float));
+            _vao->bindingPoint(1, 0);
+            // _vao->bindVBO(0, *vbo, 2 * sizeof(float), 4 * sizeof(float));
+            _vao->bindVBO(0, *vbo, 0, 4 * sizeof(float));
         }
 
     public:
@@ -263,7 +271,8 @@ void main() {
                 points[1] = {1, 1, geo.z, geo.y};
                 points[2] = {1, -1, geo.z, geo.w};
                 points[3] = {-1, -1, geo.x, geo.w};
-                auto vbo  = make_BindHelper(dummy.vbo);
+                // auto vbo  = make_BindHelper(dummy.vbo);
+                auto &vbo = dummy.vbo;
                 vbo->write(sizeof(points), points, GL_STATIC_DRAW);
             }
             // copy the contents from fbo1(screen) to fbo(widget) (as
@@ -276,7 +285,7 @@ void main() {
                 fbo1.bindTexture(0);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 auto vao = make_BindHelper(dummy.vao);
-                auto vbo = make_BindHelper(dummy.vbo);
+                // auto vbo = make_BindHelper(dummy.vbo);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
             }
             // actual render process
@@ -297,7 +306,8 @@ void main() {
                 points[1] = {geo.z, geo.y, 1, 1};
                 points[2] = {geo.z, geo.w, 1, 0};
                 points[3] = {geo.x, geo.w, 0, 0};
-                auto vbo  = make_BindHelper(dummy.vbo);
+                // auto vbo  = make_BindHelper(dummy.vbo);
+                auto &vbo = dummy.vbo;
                 vbo->write(sizeof(points), points, GL_STATIC_DRAW);
             }
             {
@@ -308,7 +318,7 @@ void main() {
                 fbo.bindTexture(0);
                 glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
                 auto vao = make_BindHelper(dummy.vao);
-                auto vbo = make_BindHelper(dummy.vbo);
+                // auto vbo = make_BindHelper(dummy.vbo);
                 glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
             }
             // /////////////////////////////////////////////////////
@@ -330,7 +340,8 @@ void main() {
     {
         glm::vec4 points[4] = {
             {-1, 1, 0, 1}, {1, 1, 1, 1}, {1, -1, 1, 0}, {-1, -1, 0, 0}};
-        auto vbo = make_BindHelper(dummy.vbo);
+        // auto vbo  = make_BindHelper(dummy.vbo);
+        auto &vbo = dummy.vbo;
         vbo->write(sizeof(points), points, GL_STATIC_DRAW);
     }
     {
@@ -341,7 +352,7 @@ void main() {
         fbo1.bindTexture(0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         auto vao = make_BindHelper(dummy.vao);
-        auto vbo = make_BindHelper(dummy.vbo);
+        // auto vbo = make_BindHelper(dummy.vbo);
         glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
     }
 }
@@ -355,6 +366,12 @@ void Window::terminate() {
             std::find(app.windowQueue.begin(), app.windowQueue.end(), this));
         glfwDestroyWindow(_window);
         _window = nullptr;
+    }
+}
+
+void Window::try_changeFocus(Widget *w) {
+    if (w->focusable()) {
+        _focus = w;
     }
 }
 } // namespace engine

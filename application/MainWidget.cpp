@@ -19,21 +19,30 @@ MainWidget::MainWidget(MainWindow *parent) : engine::Widget(parent), matrix(0) {
     {
         vbo1.reset(new engine::VertexBuffer);
         vao1.reset(new engine::VertexArray);
-        auto vbo = engine::make_BindHelper(vbo1);
-        auto vao = engine::make_BindHelper(vao1);
-        vao->enable(0, 2, 2 * sizeof(float), 0);
+        // auto vbo = engine::make_BindHelper(vbo1);
+        auto &vbo = vbo1;
+        auto  vao = engine::make_BindHelper(vao1);
+        vao->enable(0, 2, 0);
+        vao->bindingPoint(0, 0);
+        vao->bindVBO(0, *vbo, 0, 2 * sizeof(float));
     }
     {
         {
             vbo_blurScreen.reset(new engine::VertexBuffer);
             vao_blurScreen.reset(new engine::VertexArray);
-            auto vbo = engine::make_BindHelper(vbo_blurScreen);
-            auto vao = engine::make_BindHelper(vao_blurScreen);
-            vao->enable(0, 2, 4 * sizeof(float), 0);
-            vao->enable(1, 2, 4 * sizeof(float), 2 * sizeof(float));
+            // auto vbo = engine::make_BindHelper(vbo_blurScreen);
+            auto &vbo = vbo_blurScreen;
+            auto  vao = engine::make_BindHelper(vao_blurScreen);
+            vao->enable(0, 2, 0);
+            vao->bindingPoint(0, 0);
+            vao->enable(1, 2, 2 * sizeof(float));
+            vao->bindingPoint(1, 0);
+            // vao->bindVBO(0, *vbo, 2 * sizeof(float), 4 * sizeof(float));
+            vao->bindVBO(0, *vbo, 0, 4 * sizeof(float));
         }
         {
-            auto vbo = engine::make_BindHelper(vbo_blurScreen);
+            // auto vbo = engine::make_BindHelper(vbo_blurScreen);
+            auto &vbo = vbo_blurScreen;
             struct Point {
                 float x, y, tx, ty;
             } points[4] = {
@@ -80,7 +89,7 @@ void MainWidget::updateBackgroundFbo() {
         parent->program_blurN_pingpong_h->bind();
         fbo1->bindTexture(0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        auto vbo = engine::make_BindHelper(vbo_blurScreen);
+        // auto vbo = engine::make_BindHelper(vbo_blurScreen);
         auto vao = engine::make_BindHelper(vao_blurScreen);
         glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
         glUniform1i(3, 24);
@@ -97,7 +106,7 @@ void MainWidget::updateBackgroundFbo() {
         parent->program_blurN_pingpong_v->bind();
         fbo2->bindTexture(0);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        auto vbo = engine::make_BindHelper(vbo_blurScreen);
+        // auto vbo = engine::make_BindHelper(vbo_blurScreen);
         auto vao = engine::make_BindHelper(vao_blurScreen);
         glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
         glUniform1i(3, 24);
@@ -136,9 +145,8 @@ void MainWidget::render(engine::Framebuffer &fbo_1) {
         glClear(GL_COLOR_BUFFER_BIT);
         ::World::getInstance()->DebugDraw();
         b2Vec2 vertexes[4] = {{0, 0}, {0, 1}, {1, 1}, {1, 0}};
-        this->DrawSolidCircle(b2Vec2(0, 0), 10, b2Vec2(0, 0), b2Color(1, 0, 0));
-        // program_copy_texture->bind();
-        // glActiveTexture(GL_TEXTURE0);
+        // this->DrawSolidCircle(b2Vec2(0, 0), 10, b2Vec2(0, 0), b2Color(1, 0,
+        // 0)); program_copy_texture->bind(); glActiveTexture(GL_TEXTURE0);
         // glBindTexture(GL_TEXTURE_2D, m_texture);
         // glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         // vbo_blurScreen->bind();
@@ -221,7 +229,7 @@ void MainWidget::render(engine::Framebuffer &fbo_1) {
             parent->program_copy_texture->bind();
             bgfbo->bindTexture(0);
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            auto vbo = engine::make_BindHelper(vbo_blurScreen);
+            // auto vbo = engine::make_BindHelper(vbo_blurScreen);
             auto vao = engine::make_BindHelper(vao_blurScreen);
             // glUniform4f(1, 0, 0, 0, 0.6);
             glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
@@ -234,7 +242,7 @@ void MainWidget::render(engine::Framebuffer &fbo_1) {
             // glActiveTexture(GL_TEXTURE0);
             // glBindTexture(GL_TEXTURE_2D, fbo1->texture());
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-            auto vbo = engine::make_BindHelper(vbo_blurScreen);
+            // auto vbo = engine::make_BindHelper(vbo_blurScreen);
             auto vao = engine::make_BindHelper(vao_blurScreen);
             glUniform4f(1, 0, 0, 0, 0.6);
             glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&identity);
@@ -379,11 +387,11 @@ void MainWidget::KeyCallback(int key, int scancode, int action, int mods) {
                 Global::getInstance().stage = Global::Stage::Paused;
                 LBDown                      = false;
                 updateBackgroundFbo();
-                // ((MainWindow *)parent())->button_1->setVisible(true);
+                ((MainWindow *)parent())->button_1->setVisible(true);
             }
             else {
                 Global::getInstance().stage = Global::Stage::Running;
-                // ((MainWindow *)parent())->button_1->setVisible(false);
+                ((MainWindow *)parent())->button_1->setVisible(false);
             }
             // glfwPostEmptyEvent();
             break;
@@ -405,7 +413,8 @@ void MainWidget::DrawPolygon(const b2Vec2 *vertices, int32 vertexCount,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    auto vbo = engine::make_BindHelper(vbo1);
+    // auto vbo = engine::make_BindHelper(vbo1);
+    auto &vbo = vbo1;
     vbo->write(vertexCount * sizeof(b2Vec2), (void *)vertices);
     glUniform4f(1, color.r, color.g, color.b, color.a);
     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&matrix);
@@ -419,7 +428,8 @@ void MainWidget::DrawSolidPolygon(const b2Vec2 *vertices, int32 vertexCount,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    auto vbo = engine::make_BindHelper(vbo1);
+    // auto vbo = engine::make_BindHelper(vbo1);
+    auto &vbo = vbo1;
     vbo->write(vertexCount * sizeof(b2Vec2), (void *)vertices);
     glUniform4f(1, color.r, color.g, color.b, color.a);
     glUniformMatrix4fv(2, 1, GL_FALSE, (GLfloat *)&matrix);
@@ -433,7 +443,8 @@ void MainWidget::DrawCircle(const b2Vec2 &center, float radius,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    auto                  vbo = engine::make_BindHelper(vbo1);
+    // auto vbo = engine::make_BindHelper(vbo1);
+    auto                 &vbo = vbo1;
     const int             N   = 256;
     std::array<b2Vec2, N> buf;
     auto                 &circleBuffer = CCircleBuffer<N>::getInstance();
@@ -454,7 +465,8 @@ void MainWidget::DrawSolidCircle(const b2Vec2 &center, float radius,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    auto                  vbo = engine::make_BindHelper(vbo1);
+    // auto vbo = engine::make_BindHelper(vbo1);
+    auto                 &vbo = vbo1;
     const int             N   = 256;
     std::array<b2Vec2, N> buf;
     auto                 &circleBuffer = CCircleBuffer<N>::getInstance();
@@ -475,7 +487,8 @@ void MainWidget::DrawSegment(const b2Vec2 &p1, const b2Vec2 &p2,
     auto       &program = parent->program_basic;
     program->bind();
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-    auto   vbo = engine::make_BindHelper(vbo1);
+    // auto vbo = engine::make_BindHelper(vbo1);
+    auto  &vbo = vbo1;
     b2Vec2 pos[2];
     pos[0] = p1;
     pos[1] = p2;

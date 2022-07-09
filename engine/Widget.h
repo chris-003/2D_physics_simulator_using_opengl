@@ -10,7 +10,7 @@ class Widget {
 public:
     Widget(Window          *parent   = nullptr,
            const glm::vec4 &geometry = glm::vec4(0, 0, 0, 0),
-           bool             visible  = true);
+           bool visible = true, bool focusable = true);
     ~Widget();
 
 public:
@@ -28,6 +28,8 @@ public:
     void      setParent(Window *parent);
     bool      visible();
     void      setVisible(bool visible);
+    bool      focusable();
+    void      setFocusable(bool focusable);
     glm::vec4 geometry();
     void      setGeometry(const glm::vec4 &geometry);
     glm::vec2 pos();
@@ -53,5 +55,6 @@ protected:
     Window   *_parent;
     glm::vec4 geo;
     bool      _visible;
+    bool      _focusable;
 };
 } // namespace engine
