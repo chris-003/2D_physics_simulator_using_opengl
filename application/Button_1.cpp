@@ -62,7 +62,8 @@ void Button_1::render(engine::Framebuffer &fbo) {
     // vao_button_1->bind();
     auto vao = engine::make_BindHelper(vao_button_1);
     // vbo_button_1->bind();
-    if (400 <= x && x <= 800 && 0 <= y && y <= 300) {
+    if (this->x() <= x && x <= this->rightBottomX() && this->y() <= y &&
+        y <= this->rightBottomY()) {
         glUniform4f(1, 0.8, 0.8, 0.8, 0.2);
     }
     else {
