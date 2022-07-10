@@ -6,7 +6,7 @@ include $(MAKEFILE_COMMON)
 .PHONY: build
 build: main
 
-main: $(OBJ)
+main: $(OBJ) $(TOP_DIRECTORY)/engine/libengine.a $(TOP_DIRECTORY)/glad/libglad.a
 	@echo Link application/main
 	@$(CXX) $(LFLAGS) $(OBJ) $(TOP_DIRECTORY)/engine/libengine.a $(TOP_DIRECTORY)/glad/libglad.a -o main
 
