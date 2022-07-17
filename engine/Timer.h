@@ -54,8 +54,8 @@ protected:
 class DefaultTimerServer : public CommonTimerServer {
 private:
     DefaultTimerServer() {
-        count     = 0;
-        io_thread = nullptr;
+        // count     = 0;
+        // io_thread = nullptr;
     }
 
 public:
