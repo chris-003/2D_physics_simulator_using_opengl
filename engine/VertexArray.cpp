@@ -20,9 +20,18 @@ void VertexArray::unbind() {
     glBindVertexArray(0);
 }
 
+void VertexArray::enable(int index) {
+    glEnableVertexAttribArray(index);
+}
+
 void VertexArray::enable(int index, int size, int offset, GLenum type,
                          GLboolean normalize) {
     glEnableVertexAttribArray(index);
+    glVertexAttribFormat(index, size, type, normalize, offset);
+}
+
+void VertexArray::format(int index, int size, int offset, GLenum type,
+                         GLboolean normalize) {
     glVertexAttribFormat(index, size, type, normalize, offset);
 }
 

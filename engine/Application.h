@@ -11,6 +11,8 @@ private:
     Application();
     bool gladLoaded;
     void loadGlad();
+    bool freeTypeLoaded;
+    void loadFreeType();
 
 public:
     ~Application();

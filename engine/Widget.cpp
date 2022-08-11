@@ -18,6 +18,12 @@ Widget::~Widget() {
 void Widget::render(Framebuffer &fbo) {
 }
 
+bool Widget::containMouse() {
+    double x, y;
+    glfwGetCursorPos(parent()->window(), &x, &y);
+    return geo.x <= x && x <= geo.z && geo.y <= y && y <= geo.w;
+}
+
 void Widget::FramebufferSizeCallback(int width, int height) {
 }
 

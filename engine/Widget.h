@@ -17,6 +17,9 @@ public:
     virtual void render(Framebuffer &fbo);
 
 public:
+    bool containMouse();
+
+public:
     virtual void FramebufferSizeCallback(int width, int height);
     virtual void MouseButtonCallback(int button, int action, int mods);
     virtual void CursorPosCallback(double xpos, double ypos);

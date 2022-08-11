@@ -1,5 +1,6 @@
 #include "Window.h"
 #include "Application.h"
+#include "Resource.h"
 #include "ShaderProgram.h"
 #include "VertexArray.h"
 #include "VertexBuffer.h"
@@ -7,7 +8,6 @@
 #include <algorithm>
 #include <glm/mat4x4.hpp>
 #include <memory>
-
 namespace engine {
 Window::Window(const glm::vec2 &size, const std::string &title) {
     create(size, title);
@@ -214,28 +214,29 @@ void Window::render() {
     static class Dummy {
     public:
         Dummy() {
-            program.reset(new ShaderProgram(
-                R"(#version 440 core
-layout (location = 0) in vec2 VerexPosition;
-layout (location = 1) in vec2 TexCoord;
+            //             program.reset(new ShaderProgram(
+            //                 R"(#version 440 core
+            // layout (location = 0) in vec2 VerexPosition;
+            // layout (location = 1) in vec2 TexCoord;
 
-out vec2 texCoord;
+            // out vec2 texCoord;
 
-void main()
-{
-    gl_Position = vec4(VerexPosition, 0, 1);
-    texCoord = TexCoord;
-})",
-                R"(#version 440 core
-in vec2 texCoord;
+            // void main()
+            // {
+            //     gl_Position = vec4(VerexPosition, 0, 1);
+            //     texCoord = TexCoord;
+            // })",
+            //                 R"(#version 440 core
+            // in vec2 texCoord;
 
-out vec4 FragColor;
+            // out vec4 FragColor;
 
-uniform sampler2D inTexture;
+            // uniform sampler2D inTexture;
 
-void main() {
-    FragColor = texture(inTexture, texCoord);
-})"));
+            // void main() {
+            //     FragColor = texture(inTexture, texCoord);
+            // })"));
+            program = &Resource::ShaderProgram_copy();
             program->bind();
             vbo.reset(new VertexBuffer);
             vao.reset(new VertexArray);
@@ -250,9 +251,10 @@ void main() {
         }
 
     public:
-        std::unique_ptr<ShaderProgram> program;
-        std::unique_ptr<VertexBuffer>  vbo;
-        std::unique_ptr<VertexArray>   vao;
+        // std::unique_ptr<ShaderProgram> program;
+        ShaderProgram                *program;
+        std::unique_ptr<VertexBuffer> vbo;
+        std::unique_ptr<VertexArray>  vao;
     } dummy;
     for (auto iter = widgets.begin(); iter != widgets.end(); ++iter) {
         if ((*iter)->visible()) {

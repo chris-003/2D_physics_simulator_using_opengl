@@ -8,20 +8,15 @@ Object::Object() : slotIndex(0) {
 Object::~Object() {
 }
 
-Object::Slot
-Object::connect(const Signal                                &signal,
-                const std::function<void(const std::any &)> &func) {
-    // static unsigned int slotIndex = 0;
-    connections.insert(std::make_tuple(signal, Slot(slotIndex), func));
+// template<typename slot_t, typename... Args>
+// requires std::is_invocable_v<slot_t, Args...> Object::Slot
+// Object::connect(const Signal &signal, const slot_t &func) {
+//     // static unsigned int slotIndex = 0;
+//     connections.insert(
+//         std::make_tuple(signal, Slot(slotIndex), std::any(func)));
 
-    return Slot(slotIndex++);
-}
-
-Object::Slot
-Object::connect(Object *sender, const Signal &signal,
-                const std::function<void(const std::any &)> &func) {
-    return sender->connect(signal, func);
-}
+//     return Slot(slotIndex++);
+// }
 
 void Object::disconnect(const Slot &slot) {
     for (auto iter = connections.begin(); iter != connections.end(); ++iter) {
@@ -36,18 +31,20 @@ void Object::disconnect(Object *sender, const Slot &slot) {
     sender->disconnect(slot);
 }
 
-void Object::emit(const Signal &signal, const std::any &param) {
-    auto iter = connections.find(
-        std::make_tuple(signal, Slot(0), std::function<void(std::any)>()));
-    if (iter == connections.end()) {
-        return;
-    }
-    // else
-    for (; iter != connections.end() &&
-           std::get<0>(*iter).index() == signal.index();
-         ++iter) {
-        auto func = (std::get<2>(*iter));
-        (std::get<2>(*iter))(param);
-    }
-}
+// void Object::emit(const Signal &signal) {
+//     auto iter = connections.find(
+//         std::make_tuple(signal, Slot(0), std::function<void(std::any)>()));
+//     if (iter == connections.end()) {
+//         return;
+//     }
+//     // else
+//     for (; iter != connections.end() &&
+//            std::get<0>(*iter).index() == signal.index();
+//          ++iter) {
+//         auto func = (std::get<2>(*iter));
+//         std::any_cast<const std::function<void(void)>
+//         &>(std::get<2>(*iter))();
+//     }
+// }
+
 } // namespace engine

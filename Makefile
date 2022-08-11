@@ -7,7 +7,7 @@ export MAKEFILE_COMMON
 default: build
 
 include $(MAKEFILE_COMMON)
-CFLAGS += -I $(TOP_DIRECTORY)/
+CFLAGS += -I $(TOP_DIRECTORY)/ -I /usr/include/freetype2/
 export CFLAGS
 
 

@@ -1,5 +1,5 @@
 #include "MainWindow.h"
-#include "Button_1.h"
+// #include "Button_1.h"
 #include "CCircleBuffer.h"
 #include "CNormalDistBuffer.h"
 #include "Global.h"
@@ -22,9 +22,25 @@ MainWindow::MainWindow() : engine::Window(glm::vec2(800, 600), "Simulator") {
     init();
     mainWidget.reset(new MainWidget(this));
     mainWidget->setGeometry(glm::vec4(0, 0, 800, 600));
-    button_1.reset(new Button_1(this));
+    button_1.reset(new engine::Button(this));
     button_1->setGeometry(glm::vec4(400, 0, 800, 300));
     button_1->setVisible(false);
+    button_1->connect(engine::Object::Signal(0), []() {
+        static unsigned int                          cnt = 0;
+        static std::chrono::steady_clock::time_point prev =
+            std::chrono::steady_clock::now();
+        cout << "button clicked the " << ++cnt << " times!";
+        if (cnt != 1) {
+            auto now      = std::chrono::steady_clock::now();
+            auto duration = now - prev;
+            auto mscnt =
+                std::chrono::duration_cast<std::chrono::milliseconds>(duration)
+                    .count();
+            cout << " " << (1000.0f / mscnt) << " cps.";
+            prev = now;
+        }
+        cout << endl;
+    });
 }
 
 void MainWindow::init() {

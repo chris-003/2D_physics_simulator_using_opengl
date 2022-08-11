@@ -3,7 +3,7 @@
 #include <box2d/box2d.h>
 #include <glm/mat4x4.hpp>
 // #include "Widget.h"
-#include "Button_1.h"
+// #include "Button_1.h"
 #include "MainWidget.h"
 #include <memory>
 #include <vector>
@@ -35,5 +35,6 @@ protected:
     std::unique_ptr<engine::VertexBuffer> vbo_button_1, vbo_button_2;
     std::unique_ptr<engine::VertexArray>  vao_button_1;
     std::unique_ptr<MainWidget>           mainWidget;
-    std::unique_ptr<Button_1>             button_1;
+    // std::unique_ptr<Button_1>             button_1;
+    std::unique_ptr<engine::Button> button_1;
 };
