@@ -41,6 +41,7 @@ private:
     glm::vec2 getMousePos();
 
 protected:
+    engine::Timer                         simulatingTimer;
     glm::mat4x4                           matrix;
     bool                                  LBDown, RBDown;
     glm::vec2                             prevMousePos;

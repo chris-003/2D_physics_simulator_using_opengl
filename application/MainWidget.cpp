@@ -26,30 +26,33 @@ MainWidget::MainWidget(MainWindow *parent) : engine::Widget(parent), matrix(0) {
         vao->bindingPoint(0, 0);
         vao->bindVBO(0, *vbo, 0, 2 * sizeof(float));
     }
-    {
-        {
-            vbo_blurScreen.reset(new engine::VertexBuffer);
-            vao_blurScreen.reset(new engine::VertexArray);
-            // auto vbo = engine::make_BindHelper(vbo_blurScreen);
-            auto &vbo = vbo_blurScreen;
-            auto  vao = engine::make_BindHelper(vao_blurScreen);
-            vao->enable(0, 2, 0);
-            vao->bindingPoint(0, 0);
-            vao->enable(1, 2, 2 * sizeof(float));
-            vao->bindingPoint(1, 0);
-            // vao->bindVBO(0, *vbo, 2 * sizeof(float), 4 * sizeof(float));
-            vao->bindVBO(0, *vbo, 0, 4 * sizeof(float));
-        }
-        {
-            // auto vbo = engine::make_BindHelper(vbo_blurScreen);
-            auto &vbo = vbo_blurScreen;
-            struct Point {
-                float x, y, tx, ty;
-            } points[4] = {
-                {1, 1, 1, 1}, {-1, 1, 0, 1}, {-1, -1, 0, 0}, {1, -1, 1, 0}};
-            vbo->write(sizeof(points), points, GL_STATIC_DRAW);
-        }
-    }
+    {{vbo_blurScreen.reset(new engine::VertexBuffer);
+    vao_blurScreen.reset(new engine::VertexArray);
+    // auto vbo = engine::make_BindHelper(vbo_blurScreen);
+    auto &vbo = vbo_blurScreen;
+    auto  vao = engine::make_BindHelper(vao_blurScreen);
+    vao->enable(0, 2, 0);
+    vao->bindingPoint(0, 0);
+    vao->enable(1, 2, 2 * sizeof(float));
+    vao->bindingPoint(1, 0);
+    // vao->bindVBO(0, *vbo, 2 * sizeof(float), 4 * sizeof(float));
+    vao->bindVBO(0, *vbo, 0, 4 * sizeof(float));
+}
+{
+    // auto vbo = engine::make_BindHelper(vbo_blurScreen);
+    auto &vbo = vbo_blurScreen;
+    struct Point {
+        float x, y, tx, ty;
+    } points[4] = {{1, 1, 1, 1}, {-1, 1, 0, 1}, {-1, -1, 0, 0}, {1, -1, 1, 0}};
+    vbo->write(sizeof(points), points, GL_STATIC_DRAW);
+}
+}
+{
+    simulatingTimer.setCallbackFunc([]() {
+        ::World::getInstance().step();
+    });
+    simulatingTimer.start(std::chrono::milliseconds(1000 / 60));
+}
 }
 
 MainWidget::~MainWidget() {
@@ -386,11 +389,13 @@ void MainWidget::KeyCallback(int key, int scancode, int action, int mods) {
             if (Global::getInstance().stage == Global::Stage::Running) {
                 Global::getInstance().stage = Global::Stage::Paused;
                 LBDown                      = false;
+                simulatingTimer.stop();
                 updateBackgroundFbo();
                 ((MainWindow *)parent())->button_1->setVisible(true);
             }
             else {
                 Global::getInstance().stage = Global::Stage::Running;
+                simulatingTimer.start();
                 ((MainWindow *)parent())->button_1->setVisible(false);
             }
             // glfwPostEmptyEvent();
