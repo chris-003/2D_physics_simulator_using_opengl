@@ -4,7 +4,7 @@
 
 namespace engine {
 VertexBuffer::VertexBuffer() {
-    glGenBuffers(1, &m_vbo);
+    glCreateBuffers(1, &m_vbo);
 }
 
 VertexBuffer::~VertexBuffer() {
@@ -24,6 +24,6 @@ void VertexBuffer::unbind() {
 }
 
 void VertexBuffer::write(int size, void *data, GLenum usage) {
-    glBufferData(GL_ARRAY_BUFFER, size, data, usage);
+    glNamedBufferData(m_vbo, size, data, usage);
 }
 } // namespace engine

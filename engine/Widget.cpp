@@ -2,11 +2,13 @@
 #include "Window.h"
 
 namespace engine {
-Widget::Widget(Window *parent, const glm::vec4 &geometry, bool visible) {
+Widget::Widget(Window *parent, const glm::vec4 &geometry, bool visible,
+               bool focusable) {
     this->_parent = nullptr;
     setParent(parent);
-    geo            = geometry;
-    this->_visible = visible;
+    geo              = geometry;
+    this->_visible   = visible;
+    this->_focusable = focusable;
 }
 
 Widget::~Widget() {
@@ -14,6 +16,12 @@ Widget::~Widget() {
 }
 
 void Widget::render(Framebuffer &fbo) {
+}
+
+bool Widget::containMouse() {
+    double x, y;
+    glfwGetCursorPos(parent()->window(), &x, &y);
+    return geo.x <= x && x <= geo.z && geo.y <= y && y <= geo.w;
 }
 
 void Widget::FramebufferSizeCallback(int width, int height) {
@@ -63,6 +71,14 @@ bool Widget::visible() {
 
 void Widget::setVisible(bool visible) {
     _visible = visible;
+}
+
+bool Widget::focusable() {
+    return _focusable;
+}
+
+void Widget::setFocusable(bool focusable) {
+    _focusable = focusable;
 }
 
 glm::vec4 Widget::geometry() {

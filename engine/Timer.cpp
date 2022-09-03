@@ -9,7 +9,7 @@ Timer::Timer(const duration_type &duration, BasicTimerServer &timerServer)
 }
 
 Timer::~Timer() {
-    timer.cancel();
+    stop();
 }
 
 void Timer::setDuration(const duration_type &duration) {
@@ -61,18 +61,22 @@ void Timer::start(const duration_type &duration) {
 }
 
 void Timer::stop() {
-    running = false;
-    timer.cancel();
-    // --count;
-    // if (count == 0) {
-    //     delete io_thread;
-    // }
-    timerserver.remove();
+    if (!running) {
+        running = false;
+        timer.cancel();
+        // --count;
+        // if (count == 0) {
+        //     delete io_thread;
+        // }
+        timerserver.remove();
+    }
 }
 
 void Timer::handler(const boost::system::error_code &e, Timer *which) {
     if (!e.failed()) {
-        which->callbackFunc();
+        if ((bool)which->callbackFunc) {
+            which->callbackFunc();
+        }
         if (which->running) {
             which->timer.expires_from_now(which->m_duration);
             which->timer.async_wait(

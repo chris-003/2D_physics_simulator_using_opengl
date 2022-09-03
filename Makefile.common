@@ -2,8 +2,8 @@ CXX := g++
 GCC := gcc
 AR := ar
 RC := $(TOP_DIRECTORY)/engine/tools/rc/rc
-CFLAGS += -ggdb2 -O2 --pipe
-LFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lbox2d
+CFLAGS += -ggdb2 --pipe -std=c++20
+LFLAGS := -lglfw -lGL -lX11 -lpthread -lXrandr -lXi -ldl -lbox2d -lfreetype
 SUBDIRECCTORY = $(shell ls --file-type | grep "/$\")
 SUBDIRECCTORY_CLEAN = $(foreach i, $(SUBDIRECCTORY), $(i)_clean)
 # SRC = $(shell ls --file-type | grep "\.cpp\$\|\.c\$\|\.rc\$\" -E)

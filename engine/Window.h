@@ -55,6 +55,9 @@ public:
     // virtual void init();
     void terminate();
 
+private:
+    void try_changeFocus(Widget *w);
+
 protected:
     GLFWwindow           *_window;
     std::vector<Widget *> widgets;

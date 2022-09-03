@@ -10,7 +10,7 @@
 
 class MainWindow : public engine::Window {
     friend class MainWidget;
-    // friend class Button_1;
+    friend class Button_1;
 
 public:
     MainWindow();
@@ -36,4 +36,5 @@ protected:
     std::unique_ptr<engine::VertexArray>  vao_button_1;
     std::unique_ptr<MainWidget>           mainWidget;
     // std::unique_ptr<Button_1>             button_1;
+    std::unique_ptr<engine::Button> button_1;
 };

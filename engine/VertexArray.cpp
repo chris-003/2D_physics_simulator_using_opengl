@@ -1,10 +1,11 @@
 #include "VertexArray.h"
+#include "VertexBuffer.h"
 #include "glad/glad.h"
 #include <GLFW/glfw3.h>
 
 namespace engine {
 VertexArray::VertexArray() {
-    glGenVertexArrays(1, &m_vao);
+    glCreateVertexArrays(1, &m_vao);
 }
 
 VertexArray::~VertexArray() {
@@ -19,9 +20,27 @@ void VertexArray::unbind() {
     glBindVertexArray(0);
 }
 
-void VertexArray::enable(int index, int size, int stride, int offset,
-                         GLenum type, GLboolean normalize) {
+void VertexArray::enable(int index) {
     glEnableVertexAttribArray(index);
-    glVertexAttribPointer(index, size, type, normalize, stride, (void *)offset);
+}
+
+void VertexArray::enable(int index, int size, int offset, GLenum type,
+                         GLboolean normalize) {
+    glEnableVertexAttribArray(index);
+    glVertexAttribFormat(index, size, type, normalize, offset);
+}
+
+void VertexArray::format(int index, int size, int offset, GLenum type,
+                         GLboolean normalize) {
+    glVertexAttribFormat(index, size, type, normalize, offset);
+}
+
+void VertexArray::bindingPoint(int attributeIndex, int bindingPoint) {
+    glVertexArrayAttribBinding(m_vao, attributeIndex, bindingPoint);
+}
+
+void VertexArray::bindVBO(int bindingPoint, VertexBuffer &vbo, int offset,
+                          int stride) {
+    glVertexArrayVertexBuffer(m_vao, bindingPoint, vbo.m_vbo, offset, stride);
 }
 } // namespace engine

@@ -1,7 +1,9 @@
 #pragma once
 #include "Application.h"
 #include "BindHelper.h"
+#include "Button.h"
 #include "Framebuffer.h"
+#include "Object.h"
 #include "Shader.h"
 #include "ShaderProgram.h"
 #include "Timer.h"

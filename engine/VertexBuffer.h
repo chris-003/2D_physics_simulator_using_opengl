@@ -3,7 +3,11 @@
 #include <GLFW/glfw3.h>
 
 namespace engine {
+class VertexArray;
+
 class VertexBuffer {
+    friend class VertexArray;
+
 public:
     VertexBuffer();
     ~VertexBuffer();
