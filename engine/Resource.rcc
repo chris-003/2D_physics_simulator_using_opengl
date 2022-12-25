@@ -1,0 +1,17 @@
+<!-- <RCC>
+    <qresource prefix="/Engine/Shaders/">
+    <file alias="copy.vert"></file>
+    <file alisa="copy.frag"></file>
+    <file alias="color.vert"></file>
+    <file alisa="color.frag"></file>
+    <file alias="mix_color.vert"></file>
+    <file alisa="mix_color.frag"></file>
+    <file alias="renderText.vert"></file>
+    <file alisa="renderText.frag"></file>
+    </qresource>
+</RCC> -->
+<resource id="engine">
+    <prefix dir=".">
+        <directory>./Resource/</directory>
+    </prefix>
+</resource>

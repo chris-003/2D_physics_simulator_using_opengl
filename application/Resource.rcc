@@ -1,0 +1,21 @@
+<!-- <RCC>
+    <qresource prefix="/Shaders/">
+    <file alias="basic.vert">../Resource/Shaders/basic.vert</file>
+    <file alias="basic.frag">../Resource/Shaders/basic.frag</file>
+    <file alias="copy_texture.vert">../Resource/Shaders/copy_texture.vert</file>
+    <file alias="copy_texture.frag">../Resource/Shaders/copy_texture.frag</file>
+    <file alias="blur7_pingpong_h.vert">../Resource/Shaders/blur7_pingpong_h.vert</file>
+    <file alias="blur7_pingpong_h.frag">../Resource/Shaders/blur7_pingpong_h.frag</file>
+    <file alias="blur7_pingpong_v.vert">../Resource/Shaders/blur7_pingpong_v.vert</file>
+    <file alias="blur7_pingpong_v.frag">../Resource/Shaders/blur7_pingpong_v.frag</file>
+    <file alias="blurN_pingpong_h.vert">../Resource/Shaders/blurN_pingpong_h.vert</file>
+    <file alias="blurN_pingpong_h.frag">../Resource/Shaders/blurN_pingpong_h.frag</file>
+    <file alias="blurN_pingpong_v.vert">../Resource/Shaders/blurN_pingpong_v.vert</file>
+    <file alias="blurN_pingpong_v.frag">../Resource/Shaders/blurN_pingpong_v.frag</file>
+    </qresource>
+</RCC> -->
+<resource id="application">
+    <prefix dir=".">
+        <directory>./Resource/</directory>
+    </prefix>
+</resource>
